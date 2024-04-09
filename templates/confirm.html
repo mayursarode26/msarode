@@ -1,0 +1,58 @@
+<!-- confirm.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Expense Addition</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Confirm Expense Addition</h2>
+        <p>An expense entry for <strong>{{ category }}</strong> already exists for the month of <strong>{{ month }}</strong> and year <strong>{{ year }}</strong>.</p>
+        <p>The existing amount is <strong>{{ existing_amount }}</strong> and you are trying to add <strong>{{ new_amount }}</strong>.</p>
+        <p>Do you want to add the new amount to the existing one?</p>
+        <form action="/confirm_add_expense" method="post">
+            <input type="hidden" name="category" value="{{ category }}">
+            <input type="hidden" name="month" value="{{ month }}">
+            <input type="hidden" name="year" value="{{ year }}">
+            <input type="hidden" name="existing_amount" value="{{ existing_amount }}">
+            <input type="hidden" name="new_amount" value="{{ new_amount }}">
+            <button type="submit" class="btn btn-primary mr-2" name="action" value="add">Add to Existing</button>
+            <button type="submit" class="btn btn-secondary" name="action" value="cancel">Cancel</button>
+        </form>
+    </div>
+</body>
+<!-- Add this script tag to the bottom of your HTML page -->
+<!-- Add this script tag to the bottom of your HTML page -->
+<script>
+    $(document).ready(function () {
+        // Submit the form via Ajax
+        $('#expenseForm').submit(function (event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
+            $.ajax({
+                type: 'POST',
+                url: '/add_expense',
+                data: formData,
+                success: function (response) {
+                    // Show popup message
+                    alert(response.message);
+                    // Redirect to /expenses
+                    window.location.href = "/expenses";
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert('Error adding expense.');
+                }
+            });
+        });
+    });
+</script>
+
+
+
+</html>

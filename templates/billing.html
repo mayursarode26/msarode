@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        nav .navbar-brand {
+            font-size: xx-large;
+        }
+
+        /* Colors for brand */
+        nav .navbar-brand .blue {
+            color: #537fbe;
+        }
+
+        nav .navbar-brand .red {
+            color: #ea433b;
+        }
+
+        nav .navbar-brand .yellow {
+            color: #f5b82e;
+        }
+
+        nav .navbar-brand .green {
+            color: #2e944b;
+        }
+
+        /* Other styles */
+        .container {
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 15px;
+            padding-right: 15px;
+            text-align: center;
+            width: 90%;
+        }
+
+        .form-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            overflow-y: auto; /* Enable vertical scrolling */
+            max-height: calc(100vh - 150px); /* Adjust the maximum height according to your footer height */
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        select, input {
+            width: calc(100% - 22px); /* Adjusted width to account for padding and border */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        p {
+            margin-top: 20px;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="bg-light border navbar navbar-expand-md navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard"><span class="blue">B</span><span class="red">U</span><span class="yellow">S</span><span class="green">I</span><span class="maron">N</span><span class="magenta">E</span><span class="maron">S</span><span class="yellow">S</span> <span class="red">MANAGER</span></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbar">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="/dashboard">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/inventory">Inventory</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/history">History</a></li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h1 class="text-center">Billing</h1>
+                <div class="scrollable-form" style="max-height: 400px; overflow-y: auto;">
+                    <form action="/process_billing" method="POST" onsubmit="prepareData()">
+                        <label for="num_products">Number of Products:</label>
+                        <input type="number" id="num_products" name="num_products" min="1" required><br>
+
+                        <div id="product_fields"></div> <!-- This div will contain product selection fields -->
+
+                        <!-- Hidden input fields to store selected products, quantities, and amounts -->
+                        <input type="hidden" id="selected_products" name="selected_products">
+                        <input type="hidden" id="quantities" name="quantities">
+                        <input type="hidden" id="amounts" name="amounts">
+                        <input type="hidden" id="total_bill_amount" name="total_bill_amount">
+
+                        <p id="total_amount">Total Billing Amount: ₹0.00</p>
+                        <button type="submit">Process Billing</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<footer>
+    <p>&copy; 2024 Business Manager All Rights Reserved</p>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    // Function to prepare data before form submission
+    function prepareData() {
+    const numProducts = parseInt(document.getElementById('num_products').value);
+    let selectedProducts = [];
+    let quantities = [];
+    let amounts = [];
+
+    // Loop through each product field to extract data
+    for (let i = 1; i <= numProducts; i++) {
+        const productSelect = document.getElementById(`product${i}`);
+        const quantityInput = document.getElementById(`quantity${i}`);
+        const totalSpan = document.getElementById(`total${i}`);
+
+        const selectedProduct = productSelect.value;
+        const quantity = parseFloat(quantityInput.value);
+        const amount = parseFloat(totalSpan.textContent.replace('₹', ''));
+
+        selectedProducts.push(selectedProduct);
+        quantities.push(quantity);
+        amounts.push(amount);
+    }
+
+    // Set the values of hidden input fields
+    document.getElementById('selected_products').value = JSON.stringify(selectedProducts);
+    document.getElementById('quantities').value = JSON.stringify(quantities);
+    document.getElementById('amounts').value = JSON.stringify(amounts);
+    document.getElementById('total_bill_amount').value = totalBill.toFixed(2);
+}
+
+    // JavaScript to dynamically generate product selection fields based on the number of products entered
+    document.getElementById('num_products').addEventListener('input', function() {
+            const numProducts = parseInt(this.value);
+            const productFieldsDiv = document.getElementById('product_fields');
+            productFieldsDiv.innerHTML = ''; // Clear existing fields
+
+            const productInfo = JSON.parse('{{ product_info|tojson|safe }}'); // Get product info from Flask
+
+            for (let i = 1; i <= numProducts; i++) {
+                const productFieldset = document.createElement('fieldset');
+                productFieldset.innerHTML = `
+                    <legend>Product ${i}</legend>
+                    <label for="product${i}">Product:</label>
+                    <select id="product${i}" name="product${i}" onchange="calculateTotal(${i})" required>
+                        <!-- Populate options dynamically from product info -->
+                        <option value="">Select Product</option>
+                        ${productInfo.map(info => `<option value="${info[0]}" data-price="${info[1]}">${info[0]}</option>`).join('')}
+                    </select><br>
+                    <label for="price${i}">Price:</label>
+                    <span id="price${i}"></span><br>
+                    <label for="quantity${i}">Quantity:</label>
+                    <input type="number" id="quantity${i}" name="quantity${i}" min="1" onchange="calculateTotal(${i})" required><br>
+                    <label for="total${i}">Total:</label>
+                    <span id="total${i}"></span><br>
+                `;
+                productFieldsDiv.appendChild(productFieldset);
+            }
+        });
+
+          // JavaScript function to calculate total amount for a product based on quantity
+    function calculateTotal(index) {
+        const productSelect = document.getElementById(`product${index}`);
+        const priceSpan = document.getElementById(`price${index}`);
+        const quantityInput = document.getElementById(`quantity${index}`);
+        const totalSpan = document.getElementById(`total${index}`);
+
+        if (productSelect && priceSpan && quantityInput && totalSpan) {
+            const price = parseFloat(productSelect.selectedOptions[0].getAttribute('data-price'));
+            const quantity = parseFloat(quantityInput.value);
+            const total = price * quantity;
+
+            priceSpan.textContent = `₹${price.toFixed(2)}`;
+            totalSpan.textContent = `₹${total.toFixed(2)}`;
+
+            // Check if quantity exceeds available stock
+            const availableStock = parseFloat(productSelect.selectedOptions[0].getAttribute('data-stock'));
+            if (quantity > availableStock) {
+                alert(`Quantity exceeds available stock. Available stock for ${productSelect.value}: ${availableStock}`);
+                quantityInput.value = availableStock; // Set quantity to available stock
+            }
+
+            // Calculate total bill amount
+            let totalBill = 0;
+            const numProducts = parseInt(document.getElementById('num_products').value);
+            for (let i = 1; i <= numProducts; i++) {
+                const totalAmount = parseFloat(document.getElementById(`total${i}`).textContent.replace('₹', ''));
+                if (!isNaN(totalAmount)) {
+                    totalBill += totalAmount;
+                }
+            }
+
+            // Check if total amount exceeds available stock
+            if (totalBill > availableStock) {
+                alert(`Total amount exceeds available stock. Available stock for ${productSelect.value}: ${availableStock}`);
+            }
+
+            // Display total bill amount
+            document.getElementById('total_amount').textContent = `Total: ₹${totalBill.toFixed(2)}`;
+            // Set the value of the hidden input field with the total bill amount
+            document.getElementById('total_bill_amount').value = totalBill.toFixed(2);
+        }
+    }
+</script>
+</body>
+</html>
