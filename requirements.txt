@@ -1,4 +1,4 @@
-Flask==1.1.4
-flask-session==0.4.0
-Werkzeug==2.0.2
-cs50==8.0.0
+Flask==3.0.1
+Flask-Session==0.6.0
+Werkzeug==3.0.1
+cs50==9.3.4
